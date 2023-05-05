@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class RepositoryConfig {
 
     @Bean
-    public RepositoryService gitHubRepositoryService() {
+    public RepositoryService repositoryService() {
         return new RepositoryService();
     }
 
