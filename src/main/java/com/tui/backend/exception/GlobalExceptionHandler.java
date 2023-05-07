@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -27,11 +26,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpHeaders headers,
                                                                       HttpStatus status, WebRequest request) {
-        List<String> supportedMediaTypes = ex.getSupportedMediaTypes().stream()
+        var supportedMediaTypes = ex.getSupportedMediaTypes().stream()
                 .map(MediaType::toString)
                 .collect(Collectors.toList());
 
-        String errorMessage = NOT_ACCEPTABLE_EXCEPTION_MESSAGE + String.join(", ", supportedMediaTypes);
+        var errorMessage = NOT_ACCEPTABLE_EXCEPTION_MESSAGE + String.join(", ", supportedMediaTypes);
         return new ResponseEntity<>(new ApiException(HttpStatus.NOT_ACCEPTABLE, errorMessage), HttpStatus.NOT_ACCEPTABLE);
     }
 

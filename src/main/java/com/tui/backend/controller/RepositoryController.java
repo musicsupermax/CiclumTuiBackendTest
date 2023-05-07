@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/repos")
+@RequestMapping("/v1/repos")
 @RequiredArgsConstructor
 @Log4j2
 public class RepositoryController {
@@ -24,7 +24,7 @@ public class RepositoryController {
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RepositoryInfo>> findAllByUsername(@PathVariable String username) {
         log.info("Retrieving vcsRepository info for user with username: " + username);
-        List<RepositoryInfo> repositoryInfo = vcsRepositoryFacade.findAllBy(username);
+        var repositoryInfo = vcsRepositoryFacade.findAllBy(username);
         return ResponseEntity.ok()
                 .body(repositoryInfo);
     }

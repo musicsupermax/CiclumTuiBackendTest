@@ -4,13 +4,12 @@ info:
   description: API supports retreiving of the non fork user repositories
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8282
 tags:
   - name: repository
     description: Operations with VCS repository
 paths:
-  /repos:
-    summary: Operations with VCS repository
+  /v1/repos:
     get:
       tags:
         - repository

@@ -1,18 +1,13 @@
 package com.tui.backend.service;
 
 import com.tui.backend.dto.RepositoryInfo;
-import com.tui.backend.exception.UserNotFoundException;
+import com.tui.backend.facade.RepositoryServiceFacade;
 import com.tui.backend.mapper.BranchConverter;
-import com.tui.backend.mapper.UserInfoConverter;
+import com.tui.backend.mapper.RepositoryInfoConverter;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.RepositoryBranch;
-import org.eclipse.egit.github.core.client.RequestException;
-import org.eclipse.egit.github.core.service.RepositoryService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,25 +16,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GitHubRepositoryService implements VcsRepository {
 
-    private static final String USER_NOT_FOUND_DESCRIPTION = "Failed to get repositories for user: ";
-
-    private final RepositoryService repositoryService;
-    private final UserInfoConverter userInfoConverter;
+    private final RepositoryServiceFacade repositoryServiceFacade;
+    private final RepositoryInfoConverter repositoryInfoConverter;
     private final BranchConverter branchConverter;
 
-    //todo: think about using CompletableFuture for async cals
+    //todo: think about using CompletableFuture for async calls
     @Override
     public List<RepositoryInfo> doFindAllBy(String username) {
-        List<Repository> repositories = getRepositories(username);
-        List<Repository> notForkRepos = filterNotForks(repositories);
+        var repositories = repositoryServiceFacade.getRepositories(username);
+        var notForkRepos = filterNotForks(repositories);
         return notForkRepos.parallelStream()
                 .map(this::mapToUserRepositoryInfo)
                 .collect(Collectors.toList());
     }
 
     private RepositoryInfo mapToUserRepositoryInfo(Repository repository) {
-        List<RepositoryBranch> repositoryBranches = getBranches(repository);
-        RepositoryInfo repositoryInfo = userInfoConverter.toDto(repository);
+        var repositoryBranches = repositoryServiceFacade.getBranches(repository);
+        var repositoryInfo = repositoryInfoConverter.toDto(repository);
         repositoryInfo.setBranches(repositoryBranches.stream()
                 .map(branchConverter::toDto)
                 .collect(Collectors.toList()));
@@ -48,29 +41,8 @@ public class GitHubRepositoryService implements VcsRepository {
 
     private List<Repository> filterNotForks(List<Repository> repositories) {
         return repositories.stream()
-                .filter(Predicate.not(org.eclipse.egit.github.core.Repository::isFork))
+                .filter(Predicate.not(Repository::isFork))
                 .collect(Collectors.toList());
-    }
-
-    private List<RepositoryBranch> getBranches(Repository repository) {
-        try {
-            return repositoryService.getBranches(repository);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to get branches for repository: " + repository.getName());
-        }
-    }
-
-    private List<Repository> getRepositories(String username) {
-        try {
-            return repositoryService.getRepositories(username);
-        } catch (RequestException e) {
-            if (HttpStatus.NOT_FOUND.value() == e.getStatus()) {
-                throw new UserNotFoundException("User with username " + username + " not found");
-            }
-            throw new RuntimeException(USER_NOT_FOUND_DESCRIPTION + username);
-        } catch (IOException e) {
-            throw new RuntimeException(USER_NOT_FOUND_DESCRIPTION + username);
-        }
     }
 
 }
