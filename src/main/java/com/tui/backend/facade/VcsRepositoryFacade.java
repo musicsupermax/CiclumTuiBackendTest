@@ -1,7 +1,8 @@
 package com.tui.backend.facade;
 
+import com.tui.backend.constant.VcsRepositoryEnum;
+import com.tui.backend.container.VcsRepositoryStrategyContainer;
 import com.tui.backend.dto.RepositoryInfo;
-import com.tui.backend.service.VcsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +12,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VcsRepositoryFacade {
 
-    private final VcsRepository vcsRepository;
+    private final VcsRepositoryStrategyContainer vcsRepositoryStrategyContainer;
 
     public List<RepositoryInfo> findAllBy(String username) {
-        return vcsRepository.doFindAllBy(username);
+        var githubRepository = vcsRepositoryStrategyContainer.getFromContainer(VcsRepositoryEnum.GITHUB);
+        return githubRepository.doFindAllBy(username);
     }
 
 }

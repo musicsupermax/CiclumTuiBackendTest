@@ -9,7 +9,7 @@ import java.util.Optional;
 
 //todo: think about replacing converters with MapStruct
 @Component
-public class UserInfoConverter implements Converter<RepositoryInfo, Repository> {
+public class RepositoryInfoConverter implements Converter<RepositoryInfo, Repository> {
 
     @Override
     public RepositoryInfo toDto(Repository entity) {
@@ -17,9 +17,9 @@ public class UserInfoConverter implements Converter<RepositoryInfo, Repository> 
             return null;
         }
 
-        RepositoryInfo repositoryInfo = new RepositoryInfo();
+        var repositoryInfo = new RepositoryInfo();
         repositoryInfo.setName(entity.getName());
-        Optional.ofNullable(entity.getOwner()).ifPresent(user -> repositoryInfo.setUserLogin(user.getLogin()));
+        Optional.ofNullable(entity.getOwner()).ifPresent(owner -> repositoryInfo.setUserLogin(owner.getLogin()));
         return repositoryInfo;
     }
 }

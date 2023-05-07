@@ -16,7 +16,7 @@ public class BranchConverter implements Converter<Branch, RepositoryBranch> {
             return null;
         }
 
-        Branch branch = new Branch();
+        var branch = new Branch();
         branch.setName(entity.getName());
         Optional.ofNullable(entity.getCommit()).ifPresent(commit -> branch.setLastCommitSha(commit.getSha()));
         return branch;
