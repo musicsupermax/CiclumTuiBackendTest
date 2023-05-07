@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.tui</groupId>
-	<artifactId>backend</artifactId>
+	<artifactId>vcs-repo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tui-backend-task</name>
 	<description>Back end Tui tech task</description>
