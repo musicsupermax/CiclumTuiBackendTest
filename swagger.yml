@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: Tui Vcs Repository Support Task
+  description: API supports retreiving of the non fork user repositories
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: repository
+    description: Operations with VCS repository
+paths:
+  /repos:
+    summary: Operations with VCS repository
+    get:
+      tags:
+        - repository
+      summary: Get list users non fork repositories
+      operationId: findAllByUsername
+      responses:
+        200:
+          description: OK
+        404:
+          description: User Not found
+        406:
+          description: Not Accesptable Media Type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryInfo'
+components:
+  schemas:
+    Branch:
+      type: object
+      properties:
+        name:
+          type: string
+        lastCommitSha:
+          type: string
+    RepositoryInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        userLogin:
+          type: string
+        branches:
+          type: array
+          xml:
+            name: branches
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Branch'
